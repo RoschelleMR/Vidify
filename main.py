@@ -78,18 +78,17 @@ def check_and_generate_videos():
 
         
 
-schedule.every().second.do(check_and_generate_videos)
+# schedule.every().second.do(check_and_generate_videos)
 
-# # Scheduler for three specific times of the day
-# schedule.every().day.at("09:00").do(check_and_generate_videos)
-# schedule.every().day.at("15:00").do(check_and_generate_videos)
-# schedule.every().day.at("21:00").do(check_and_generate_videos)
+# Scheduler for three specific times of the day
+schedule.every().day.at("9:00").do(check_and_generate_videos)
+schedule.every().day.at("15:00").do(check_and_generate_videos)
+schedule.every().day.at("21:00").do(check_and_generate_videos)
 
 
 if __name__ == "__main__":
     
-    # check_and_generate_videos()
     
     while True:
         schedule.run_pending()
-        # time.sleep(1)
+        time.sleep(1)
