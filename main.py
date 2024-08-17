@@ -1,8 +1,11 @@
+import random
 import sys
 import os
 
 import moviepy.editor as mpy
 import moviepy.video.fx.all as vfx
+
+from moviepy.editor import VideoFileClip, concatenate_videoclips
 
 from components.post_fetch import fetch_subreddit_posts
 from modules.audio_gen import generate_audio
@@ -14,20 +17,54 @@ import schedule
 import time
 
 
+# Load all video clips from the directory
+def load_clips(directory):
+    
+    # Load all video files from the directory
+    clips = []
+    for file_name in os.listdir(directory):
+
+        if file_name.endswith(".mp4"):  # Assuming your clips are in .mp4 format
+            
+            clip = VideoFileClip(os.path.join(directory, file_name))
+            clips.append(clip)
+            
+    return clips
+
+
+# Create a background video by concatenating random clips to match the audio length
+def create_background_video(clips, audio_length):
+    selected_clips = []
+    total_duration = 0
+    
+    while total_duration < audio_length:
+        
+        clip = random.choice(clips)
+        selected_clips.append(clip)
+        total_duration += clip.duration
+
+    # Concatenate selected clips
+    background_video = concatenate_videoclips(selected_clips)
+    return background_video
+
+
 def generate_batch():
      
     
-    subreddit_name = 'AmItheAsshole'
-    fetched_posts = fetch_subreddit_posts(subreddit_name, limit=10)
+    # subreddit_name = 'AmItheAsshole'
+    # fetched_posts = fetch_subreddit_posts(subreddit_name, limit=10)
     
-    generate_audio(fetched_posts)
+    # generate_audio(fetched_posts)
     
     audio_folder = './audio'
+    
+    background_clips = load_clips('videos/background')
 
     # Traverse all the audios in the audio folder
     for audio_file in os.listdir(audio_folder):
         
-        if audio_file.endswith('.mp3'):
+        #only do first one for now
+        if audio_file.endswith('.mp3') and audio_file == '1et3ihl.mp3':
             
             audio_name = audio_file.split('.')[0]
             audio_path = os.path.join(audio_folder, audio_file)
@@ -35,7 +72,9 @@ def generate_batch():
             # Generate captions for each audio
             clip_words, final_duration = generate_captions(audio_path)
             
-            generate_video('videos/background/minecraft_1.mp4', audio_path, audio_name, clip_words, final_duration)
+            background_video = create_background_video(background_clips, final_duration)
+            
+            generate_video(background_video, audio_path, audio_name, clip_words, final_duration)
             
     print("All videos generated successfully.")
 
@@ -80,15 +119,16 @@ def check_and_generate_videos():
 
 # schedule.every().second.do(check_and_generate_videos)
 
-# Scheduler for three specific times of the day
-schedule.every().day.at("9:00").do(check_and_generate_videos)
-schedule.every().day.at("15:00").do(check_and_generate_videos)
-schedule.every().day.at("21:00").do(check_and_generate_videos)
+# # Scheduler for three specific times of the day
+# schedule.every().day.at("9:00").do(check_and_generate_videos)
+# schedule.every().day.at("15:00").do(check_and_generate_videos)
+# schedule.every().day.at("21:00").do(check_and_generate_videos)
 
 
 if __name__ == "__main__":
     
+    generate_batch()
     
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    # while True:
+    #     schedule.run_pending()
+    #     time.sleep(1)

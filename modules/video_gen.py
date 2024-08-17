@@ -5,7 +5,7 @@ from tqdm import tqdm
 def generate_video(background_video, audio_path, audio_name, clip_words, final_duration):
     
     print("Loading background video...")
-    original_video = VideoFileClip(background_video)
+    original_video = background_video
     print("Background video loaded.")
 
     print("Loading audio clip...")
