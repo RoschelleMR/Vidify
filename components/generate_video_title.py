@@ -18,24 +18,22 @@ def generate_video_title(transcript):
     Returns:
         str: Generated video title.
     """
-
-    prompt = f"Generate a catchy and relevant title for a YouTube video based on this transcript:\n\n{transcript}\n\nTitle:"
     
     response = client.chat.completions.create(
         model="gpt-4o",  # You can choose a different model if needed
         messages=[
-            {"role": "system", "content": "You are a YouTube video creator. Generate a catchy and relevant title for a video based on the following transcript:"},
+            {"role": "system", "content": "You are a YouTube video creator. Generate a short catchy and relevant title for a video based on the following transcript"},
             {"role": "user", "content": transcript}
         ],
-        max_tokens=20,  # Keep it short for a title
-        temperature=0.7,
+        max_tokens=256,  # Keep it short for a title
+        temperature=1,
         n=1
     )
     
     title = response.choices[0].message.content
     return title
 
-# # Example usage
-# transcript = "This video is about a person who caught their spouse messaging others online and how they handled the situation."
+# # Example usage using long reddit post transcript for a 2 minute long video
+# transcript = """Am I the asshole for not wanting to attend my sister's wedding? My sister and I have never been close. She has always been the golden child in our family, while I have been the black sheep. She is the one who always gets the attention and praise, while I am the one who is always criticized and ignored. I have always felt like I am not good enough for my family, and my sister's wedding is just another reminder of that. I know that I should be happy for her, but I just can't bring myself to attend the wedding. I don't want to be a part of her special day when I have never felt like a part of the family. Am I the asshole for not wanting to attend my sister's wedding?"""
 # title = generate_video_title(transcript)
 # print(f"Generated Title: {title}")
