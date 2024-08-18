@@ -30,10 +30,13 @@ def fetch_subreddit_posts(subreddit_name, limit=5):
         if post.stickied:
             continue
         
-        text = post.selftext
-        cleaned_text = clean_text(text)
+        # dictitonary of post title, description, and selftext
         
-        posts_dict[post.id] = cleaned_text
+        dict_post = {
+            'title': clean_text(post.title),
+            'selftext': clean_text(post.selftext) 
+        }
+        
+        posts_dict[post.id] = dict_post
     
     return posts_dict
-
