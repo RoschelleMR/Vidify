@@ -13,18 +13,29 @@ def generate_audio(text):
     
   """
   
-  for post_id, post_text in tqdm(text.items(), desc="Generating audio"):
+  
+  for post_id, post_info in tqdm(text.items(), desc="Generating audio"):
     
-    audio = client.generate(
-      text=post_text,
-      voice='Will',
+    post_title = post_info['title']
+    post_selftext = post_info['selftext']
+    
+    # Combine the title and selftext into one string
+    
+    combined_text = f"{post_title}. {post_selftext}"
+        
+    # Generate audio from the combined text
+    full_audio = client.generate(
+        text=combined_text,
+        voice='Lowy - soothing, gentle, and warm',
     )
     
     try:
-      save(audio, f'./audio/{post_id}.mp3')
+      save(full_audio, f'./audio/{post_id}.mp3')
       print(f"Audio generated and saved for post ID: {post_id}")
 
     except Exception as e:
       print(f"An error occurred while saving audio for post ID {post_id}: {e}")
   
   return None
+
+
