@@ -3,6 +3,7 @@ import './App.css'
 import axios from 'axios'
 
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
+import { jwtDecode } from "jwt-decode";
 
 import Dashboard from './routes/Dashboard'
 import Home from './routes/Home'
@@ -10,21 +11,30 @@ import Home from './routes/Home'
 
 function App() {
 
-  const [jwt, setJwt] = useState(localStorage.getItem("jwt"));
+  const [jwt, setJwt] = useState(localStorage.getItem('jwt'));
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if JWT exists in the URL after Google login
+    // Extract JWT from the URL after Google login
     const query = new URLSearchParams(window.location.search);
-    const token = query.get("jwt");
+    const token = query.get('jwt');
 
     if (token) {
       setJwt(token);
-      localStorage.setItem("jwt", token);  // Store JWT for future use
-      window.history.replaceState(null, null, window.location.pathname);  // Clean up the URL
+      localStorage.setItem('jwt', token);  // Store JWT in localStorage
 
-      // Navigate to the dashboard after login/signup
-      navigate('/dashboard');
+      // Check if JWT has expired
+      const decodedToken = jwtDecode(token);
+      const currentTime = Date.now() / 1000;
+
+      if (decodedToken.exp < currentTime) {
+        // Token is expired, remove it and redirect to login
+        localStorage.removeItem('jwt');
+        navigate('/');
+      } else {
+        // Token is valid, redirect to dashboard
+        navigate('/dashboard');
+      }
     }
   }, [navigate]);
 

@@ -1,4 +1,5 @@
 import json
+import time
 from flask import Flask, Response, request, session
 import requests
 from dotenv import load_dotenv
@@ -54,6 +55,7 @@ def generate_JWT(payload):
 
 # Login required decorator to protect routes
 def login_required(function):
+    
     def wrapper(*args, **kwargs):
         encoded_jwt = request.headers.get("Authorization").split("Bearer ")[1]
         if encoded_jwt is None:
@@ -80,7 +82,7 @@ def google_callback():
         id_token=credentials._id_token,
         request=token_request,
         audience=GOOGLE_CLIENT_ID,
-        clock_skew_in_seconds=10
+        clock_skew_in_seconds=15
     )
     session["google_id"] = id_info.get("sub")  # Store Google ID in session
 
@@ -91,8 +93,11 @@ def google_callback():
             "id": id_info.get("sub"),
             "name": id_info.get("name"),
             "email": id_info.get("email"),
-            "profile_picture": id_info.get("picture")
+            "profile_picture": id_info.get("picture"),
+            "googleAccessToken": credentials.token,
+            "googleRefreshToken": credentials.refresh_token 
     }
+    
     
     # Store user data in Cosmos DB
     upsert_user(user_data)
@@ -125,21 +130,28 @@ def logout():
 @app.route("/home", methods=["GET"])
 @login_required
 def home_page_user():
+    
     encoded_jwt = request.headers.get("Authorization").split("Bearer ")[1]
     try:
-        decoded_jwt = jwt.decode(encoded_jwt, app.secret_key, algorithms=[ALGORITHM])
-        print(decoded_jwt)
+        decoded_jwt = jwt.decode(encoded_jwt, app.secret_key, algorithms=[ALGORITHM], leeway=15)
+        return Response(
+            response=json.dumps(decoded_jwt),
+            status=200,
+            mimetype='application/json'
+            
+        )
+    except jwt.ExpiredSignatureError:
+        return Response(
+            response=json.dumps({"message": "Token has expired"}),
+            status=401,
+            mimetype='application/json'
+        )
     except Exception as e:
         return Response(
             response=json.dumps({"message": "Decoding JWT Failed", "exception": e.args}),
             status=500,
             mimetype='application/json'
         )
-    return Response(
-        response=json.dumps(decoded_jwt),
-        status=200,
-        mimetype='application/json'
-    )
 
 
 
