@@ -41,7 +41,7 @@ const Dashboard = () => {
     };
 
     fetchData();
-  }, []);
+  }, [navigate]);
 
   return (
     <div>
