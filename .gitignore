@@ -2,3 +2,7 @@ videos/
 auth/
 clips/
 audio/
+venv/
+.env
+
+__pycache__

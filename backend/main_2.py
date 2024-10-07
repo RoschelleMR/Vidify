@@ -51,8 +51,8 @@ def create_background_video(clips, audio_length):
 def generate_batch():
      
     
-    # subreddit_name = 'AmItheAsshole'
-    # fetched_posts = fetch_subreddit_posts(subreddit_name, limit=10)
+    # subreddit_name = 'offmychest'
+    # fetched_posts = fetch_subreddit_posts(subreddit_name, limit=5)
     
     # generate_audio(fetched_posts)
     
@@ -64,7 +64,7 @@ def generate_batch():
     for audio_file in os.listdir(audio_folder):
         
         #only do first one for now
-        if audio_file.endswith('.mp3') and audio_file == '1et3ihl.mp3':
+        if audio_file.endswith('.mp3'):
             
             audio_name = audio_file.split('.')[0]
             audio_path = os.path.join(audio_folder, audio_file)

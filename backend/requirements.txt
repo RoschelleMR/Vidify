@@ -1,0 +1,11 @@
+Flask
+Flask-CORS
+moviepy
+openai
+mysql-connector-python
+connectdb
+azure-cosmos
+pyjwt
+dotenv
+google-auth-oauthlib
+google-auth

@@ -13,7 +13,10 @@ change_settings({"IMAGEMAGICK_BINARY": r"C:\\Program Files\\ImageMagick-7.1.1-Q1
 import whisper_timestamped as whisper
 from moviepy.editor import TextClip, VideoFileClip, CompositeVideoClip, AudioFileClip
 
+import moviepy.video.fx.all as vfx
+
 import re
+
 
 
 # Remove full stops, commas, exclamations, and question marks from the text.
@@ -68,8 +71,14 @@ def get_word_segments(transcription):
                 font='Montserrat-Black',
                 color='white').set_start(word['start']).set_end(word['end']).set_position('center')
             
+            
             words_list.append(text1)
             words_list.append(text2)
+
+            
+            words_list.append(text1)
+            words_list.append(text2)
+            
             
     return words_list, duration
 
@@ -84,9 +93,4 @@ def generate_captions(audio):
     print("Captions generated successfully.")
 
     return clip_words, final_duration
-
-
-
-
-
 

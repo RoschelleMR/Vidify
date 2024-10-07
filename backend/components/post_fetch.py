@@ -21,7 +21,7 @@ def fetch_subreddit_posts(subreddit_name, limit=5):
     )
 
     subreddit = reddit.subreddit(subreddit_name)
-    posts = subreddit.new(limit=limit)
+    posts = subreddit.hot(limit=limit)
     
     posts_dict = {}
 
@@ -30,11 +30,14 @@ def fetch_subreddit_posts(subreddit_name, limit=5):
         if post.stickied:
             continue
         
-        # dictitonary of post title, description, and selftext
+        # dictitonary of post title, and selftext
+        
+        cleaned_title = clean_text(post.title)
+        cleaned_selftext = clean_text(post.selftext)
         
         dict_post = {
-            'title': clean_text(post.title),
-            'selftext': clean_text(post.selftext) 
+            'title': cleaned_title,
+            'selftext': cleaned_selftext 
         }
         
         posts_dict[post.id] = dict_post
