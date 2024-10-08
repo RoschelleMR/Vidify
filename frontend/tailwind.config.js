@@ -26,6 +26,7 @@ export default {
         'primary': "#1bf84e",
         'secondary': "#F3F4F6",
         'accent': "#b9febe",
+        'dash': "#000",
         body: {
           default: "#000",
           slate: "#848484",

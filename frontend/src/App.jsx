@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-import axios from 'axios'
 
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { jwtDecode } from "jwt-decode";
@@ -39,7 +38,7 @@ function App() {
   }, [navigate]);
 
   return (
-    <div >
+    <div>
 
       <Routes>
         {/* Route for Dashboard (Protected Route) */}
