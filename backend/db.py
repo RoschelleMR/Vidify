@@ -1,12 +1,12 @@
 from azure.cosmos import CosmosClient, PartitionKey
+from azure.storage.blob import BlobServiceClient
 from dotenv import load_dotenv
 import os
 
 # Load environment variables from the .env file
 load_dotenv()
 
-
-# Your Cosmos DB credentials (from the Azure portal)
+# Cosmos DB credentials (from the Azure portal)
 COSMOS_URI =  os.getenv("COSMOS_URI")
 COSMOS_KEY = os.getenv("COSMOS_KEY")
 DATABASE_NAME = "vidify-db"

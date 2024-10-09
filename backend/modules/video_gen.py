@@ -26,6 +26,9 @@ def generate_video(background_video, audio_path, audio_name, clip_words, final_d
 
     print(f"Generating final video file for {audio_name} ...")
     
-    final_video.write_videofile(f'videos/generated/{audio_name}.mp4', codec='libx264', audio_codec="aac")
+    final_video.write_videofile(f'../videos/generated/{audio_name}.mp4', codec='libx264', audio_codec="aac")
+    video_path = f'../videos/generated/{audio_name}.mp4'
     
     print("Final video generated successfully.")
+    
+    return video_path

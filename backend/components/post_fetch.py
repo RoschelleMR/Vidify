@@ -1,10 +1,13 @@
 import praw
 import re
+import os
+from dotenv import load_dotenv
 
 from .text_cleaner import clean_text
 
+load_dotenv()
 
-def fetch_subreddit_posts(subreddit_name, limit=5):
+def fetch_subreddit_posts(subreddit_name, limit, post_type):
     
     """
     Fetches the latest posts from a subreddit.
@@ -13,15 +16,23 @@ def fetch_subreddit_posts(subreddit_name, limit=5):
         dict: A dictionary of post IDs and their cleaned text.
         
     """
+    
+    print('fetching posts', subreddit_name, limit, post_type)
    
     reddit = praw.Reddit(
-        client_id='MHLfk5UxdRjHbN6OkB5gyQ',
-        client_secret='aJt_aBCDHr-Ze6oSiZduHbdRrBLNYA',
-        user_agent='vidify by /u/ChristmusLights2001',
+        client_id=os.getenv("REDDIT_CLIENT_ID"),
+        client_secret=os.getenv("REDDIT_CLIENT_SECRET"),
+        user_agent=os.getenv("REDDIT_USER_AGENT"),
     )
 
     subreddit = reddit.subreddit(subreddit_name)
-    posts = subreddit.hot(limit=limit)
+    
+    if post_type == 'hot':
+        posts = subreddit.hot(limit=limit)
+    elif post_type == 'new':
+        posts = subreddit.new(limit=limit)
+    elif post_type == 'top':
+        posts = subreddit.top(limit=limit)
     
     posts_dict = {}
 
@@ -41,5 +52,5 @@ def fetch_subreddit_posts(subreddit_name, limit=5):
         }
         
         posts_dict[post.id] = dict_post
-    
+    print('fetched posts: ', posts_dict)
     return posts_dict

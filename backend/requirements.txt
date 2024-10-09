@@ -5,7 +5,13 @@ openai
 mysql-connector-python
 connectdb
 azure-cosmos
+azure-storage-blob
+praw
 pyjwt
 dotenv
+elevenlabs
 google-auth-oauthlib
+oauth2client
 google-auth
+google-api-python-client
+whisper-timestamped

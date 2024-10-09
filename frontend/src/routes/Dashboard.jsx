@@ -2,6 +2,27 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'
 
 import  Navigation  from '../components/Navigation'
+import VideoGenerationSection from '../components/VIdeoGenerationSection';
+import VideoList from '../components/VideoList';
+
+async function generateVideos(subreddit, postType, numVideos, user) {
+  
+  const response = await fetch('http://localhost:5000/generate_videos', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      subreddit: subreddit,
+      post_type: postType,
+      num_videos: numVideos,
+      user_id: user
+    }),
+  });
+
+  const data = await response.json();
+  console.log('Generated Videos:', data.generated_videos);
+}
 
 const Dashboard = () => {
   const [message, setMessage] = useState("");
@@ -57,14 +78,26 @@ const Dashboard = () => {
       {/* Main area */}
       <section className="w-full flex flex-col 
       justify-center min-h-screen
-      gap-10 px-10 ml-20">
+      gap-10 px-10 pt-8 ml-20">
         <h1 className='font-extrabold text-heading-xl text-white'>Dashboard</h1>
         <p className='font-body text-heading-md text-white'>{message}</p>
-        <div className="w-full h-80 border border-neutral-500/50 bg-neutral-800/20 rounded" />
+
+        
+        <div className="w-full border border-neutral-500/50 bg-neutral-800/20 
+        rounded flex flex-row justify-center gap-5 max-lg:flex-col">
+          <VideoGenerationSection generateVideos = {generateVideos} user={userData.sub}/>
+          <div className="w-full border border-neutral-500/50 bg-neutral-800/20 
+        rounded flex flex-row justify-center gap-5">
+            {/* Component to list all generated videos */}
+            <VideoList user={userData.sub} />
+          </div>
+          
+        </div>
         <div className="flex flex-row gap-5 w-full">
           <div className="border-neutral-500/50 h-60 w-1/2 bg-neutral-800/20 rounded border" />
           <div className="border-neutral-500/50 h-60 w-1/2 bg-neutral-800/20 rounded border" />
         </div>
+
       </section>
     </main>
     

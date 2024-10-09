@@ -2,8 +2,13 @@ from elevenlabs import play, save
 from elevenlabs.client import ElevenLabs
 from tqdm import tqdm
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 client = ElevenLabs(
-  api_key="sk_39ebd324a1e8c5683cd5a446e089ef369520d7c054447fe5", 
+  api_key=os.getenv("ELEVENLABS_API_KEY"), 
 )
 
 def generate_audio(text):
@@ -30,7 +35,7 @@ def generate_audio(text):
     )
     
     try:
-      save(full_audio, f'./audio/{post_id}.mp3')
+      save(full_audio, f'../audio/{post_id}.mp3')
       print(f"Audio generated and saved for post ID: {post_id}")
 
     except Exception as e:
