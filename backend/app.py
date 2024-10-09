@@ -252,22 +252,22 @@ def generate_videos_route():
         
 
         # Call the generate_videos function
-        # generated_videos = generate_videos(subreddit_name, post_type, num_videos)
+        generated_videos = generate_videos(subreddit_name, post_type, num_videos)
         
         # Sample generated videos for testing
-        generated_videos = [{
-            "path": "../videos/generated/1fzgp8r.mp4",
-            "title": "1fzgp8r"
-        },
-        {
-            "path": "../videos/generated/1euv77y.mp4",
-            "title": "1euv77y"
-        },
-        {
-            "path": "../videos/generated/1euxboj.mp4",
-            "title": "1euxboj"
-        }
-        ]
+        # generated_videos = [{
+        #     "path": "../videos/generated/1fzgp8r.mp4",
+        #     "title": "1fzgp8r"
+        # },
+        # {
+        #     "path": "../videos/generated/1euv77y.mp4",
+        #     "title": "1euv77y"
+        # },
+        # {
+        #     "path": "../videos/generated/1euxboj.mp4",
+        #     "title": "1euxboj"
+        # }
+        # ]
         
         # Iterate through generated videos and upload to Blob Storage + store metadata in CosmosDB
         uploaded_videos = []
