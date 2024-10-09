@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const VideoList = ({ user }) => {
   const [videos, setVideos] = useState([]);
@@ -33,10 +33,12 @@ const VideoList = ({ user }) => {
   };
 
   // Function to handle download
-  const handleDownload = (videoUrl) => {
+  const handleDownload = (videoUrl, videoTitle) => {
     const link = document.createElement('a');
     link.href = videoUrl;
-    link.setAttribute('download', 'video.mp4');  // You can customize the file name
+    link.target = '_blank'; 
+    link.rel = 'noopener noreferrer'; 
+    link.setAttribute('download', `${videoTitle}.mp4`);  
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

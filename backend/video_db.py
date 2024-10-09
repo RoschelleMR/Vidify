@@ -1,7 +1,7 @@
 import datetime
 import uuid
 from azure.cosmos import CosmosClient, PartitionKey
-from azure.storage.blob import BlobServiceClient
+from azure.storage.blob import BlobServiceClient, ContentSettings
 from dotenv import load_dotenv
 import os
 
@@ -42,9 +42,14 @@ def upload_video_to_blob(file_path, user_id, blob_name):
             print(f"Blob {blob_name} already exists")
             return blob_client.url
         
+        # Set the Content-Type and Content-Disposition
+        content_settings = ContentSettings(
+            content_type='video/mp4', 
+        )
+        
         # Upload the video to Azure Blob
         with open(file_path, "rb") as data:
-            blob_client.upload_blob(data)
+            blob_client.upload_blob(data, content_settings=content_settings)
 
         print(f"Uploaded {blob_name} successfully")
         return blob_client.url  # Return the URL to store in CosmosDB
