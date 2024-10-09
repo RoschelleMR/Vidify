@@ -26,10 +26,30 @@ const VideoList = ({ user }) => {
     }
   };
 
-  // Function to handle upload (for example, to YouTube)
-  const handleUpload = async (videoUrl) => {
-    // You can add logic to upload the video to YouTube here
-    console.log(`Uploading video: ${videoUrl}`);
+  const handleUpload = async (videoId, videoPath, videoTitle, videoDesc, user_id) => {
+    try {
+      const response = await fetch('http://localhost:5000/upload_to_youtube', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          video_path: videoPath,
+          title: videoTitle,
+          description: videoDesc,
+          user_id: user_id, 
+        }),
+      });
+  
+      const data = await response.json();
+      if (data.status === 'success') {
+        console.log('Video uploaded successfully!');
+      } else {
+        console.error('Error uploading video:', data.message);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   // Function to handle download
@@ -65,7 +85,7 @@ const VideoList = ({ user }) => {
                   Download
                 </button>
                 <button
-                  onClick={() => handleUpload(video.url)}
+                  onClick={() => handleUpload(video.id, video.url, video.title, 'Check out this video!', video.user_id)}
                   className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded"
                 >
                   Upload

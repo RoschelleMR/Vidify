@@ -62,7 +62,7 @@ const VideoGenerationSection = ({generateVideos, user}) => {
             {/* Generate Button */}
             <button
             onClick={handleGenerateVideo}
-            className="bg-primary hover:bg-accent text-white font-bold
+            className="bg-primary hover:bg-accent text-black font-bold
             py-2 px-4 rounded mt-4 max-w-max"
             >
             Generate Video

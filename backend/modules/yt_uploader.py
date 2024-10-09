@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import http.client as httplib
+import tempfile
 
 import httplib2
 import os
@@ -14,6 +15,9 @@ from googleapiclient.http import MediaFileUpload
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.file import Storage
 from oauth2client.tools import argparser, run_flow
+
+from google import oauth2
+from azure.storage.blob import BlobServiceClient
 
 
 # Explicitly tell the underlying HTTP transport library not to retry, since
@@ -68,27 +72,54 @@ https://developers.google.com/api-client-library/python/guide/aaa_client_secrets
 
 VALID_PRIVACY_STATUSES = ("public", "private", "unlisted")
 
+# Initialize the BlobServiceClient with your connection string
+connect_str = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
+blob_service_client = BlobServiceClient.from_connection_string(connect_str)
 
-def get_authenticated_service():
-    
-  flow = flow_from_clientsecrets(CLIENT_SECRETS_FILE,
-    scope=YOUTUBE_UPLOAD_SCOPE,
-    message=MISSING_CLIENT_SECRETS_MESSAGE)
 
-  storage = Storage("%s-oauth2.json" % sys.argv[0])
-  credentials = storage.get()
-
-  if credentials is None or credentials.invalid:
-    credentials = run_flow(flow, storage)
-
-  return build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
-    http=credentials.authorize(httplib2.Http()))
+def get_authenticated_service(user_credentials):
   
+  credentials = oauth2.credentials.Credentials(
+        token=user_credentials['access_token'],
+        refresh_token=user_credentials['refresh_token'],
+        token_uri=user_credentials['token_uri'],
+        client_id=user_credentials['client_id'],
+        client_secret=user_credentials['client_secret'],
+        scopes=user_credentials['scopes']
+  )
+  
+  # Build the YouTube service using the user credentials
+  return build(
+      YOUTUBE_API_SERVICE_NAME,
+      YOUTUBE_API_VERSION,
+      credentials=credentials
+  )
+
+
+def download_blob_to_tempfile(blob_url):
+    """Download the blob from Azure to a temporary file and return the file path."""
+    # Parse the blob URL to extract the container and blob name
+    container_name = blob_url.split("/")[3]
+    blob_name = "/".join(blob_url.split("/")[4:])
+
+    # Create a blob client
+    blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
+
+    # Create a temporary file
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
+    temp_file_path = temp_file.name
+
+    # Download the blob data to the temporary file
+    with open(temp_file_path, "wb") as download_file:
+        blob_data = blob_client.download_blob()
+        blob_data.readinto(download_file)
+
+    return temp_file_path
   
 
-def upload_video(video_path, title, desc, tags=TAGS, category_id=CATEGORY_ID, privacy_status=PRIVACY_STATUS):
+def upload_video(video_path, title, desc,  user_credentials, tags=TAGS, category_id=CATEGORY_ID, privacy_status=PRIVACY_STATUS):
 
-   youtube = get_authenticated_service()
+   youtube = get_authenticated_service(user_credentials=user_credentials)
 
    request_body = dict(
        snippet = dict(
@@ -103,7 +134,9 @@ def upload_video(video_path, title, desc, tags=TAGS, category_id=CATEGORY_ID, pr
         )
     )
    
-   media = MediaFileUpload(video_path, chunksize=-1, resumable=True)
+   local_video_path = download_blob_to_tempfile(video_path)
+   
+   media = MediaFileUpload(local_video_path, chunksize=-1, resumable=True)
    
    # Call the API's videos.insert method to create and upload the video.
   

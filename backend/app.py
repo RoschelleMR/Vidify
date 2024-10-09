@@ -25,7 +25,7 @@ from modules.captions import generate_captions
 from modules.video_gen import generate_video
 from modules.yt_uploader import upload_video
 
-from db import upsert_user, get_user
+from db import fetch_user_credentials, upsert_user, get_user
 
 
 
@@ -48,7 +48,11 @@ os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 AUTH_FOLDER = 'auth/'
 CLIENT_SECRETS_FILE = os.path.join(AUTH_FOLDER, 'client_secrets.json')
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
-SCOPES = ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email', 'openid']
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+SCOPES = ['https://www.googleapis.com/auth/userinfo.profile', 
+          'https://www.googleapis.com/auth/userinfo.email',
+          "https://www.googleapis.com/auth/youtube.upload",  # Include YouTube upload scope for now 
+          'openid']
 REDIRECT_URI = 'http://localhost:5000/auth/google/callback'
 ALGORITHM = os.getenv("ALGORITHM")
 BACKEND_URL=os.getenv("BACKEND_URL")
@@ -165,8 +169,15 @@ def google_callback():
             "name": id_info.get("name"),
             "email": id_info.get("email"),
             "profile_picture": id_info.get("picture"),
-            "googleAccessToken": credentials.token,
-            "googleRefreshToken": credentials.refresh_token 
+            "google_credentials": {
+                "access_token": credentials.token,
+                "refresh_token": credentials.refresh_token,
+                "token_uri": credentials.token_uri,
+                "client_id": GOOGLE_CLIENT_ID,
+                "client_secret": GOOGLE_CLIENT_SECRET,
+                "scopes": SCOPES
+            }
+            
     }
     
     
@@ -311,6 +322,27 @@ def delete_video_route(video_id):
     else:
         return jsonify({"status": "error", "message": "Failed to delete video"}), 500
 
+@app.route('/upload_to_youtube', methods=['POST'])
+def upload_to_youtube():
+    data = request.get_json()
+    
+    # Get video details from the request body
+    video_path = data.get('video_path')
+    video_title = data.get('title')
+    video_desc = data.get('description')
+    user_id = data.get('user_id')
+    
+    print('This is the data IN UPLOAD', data)
+
+    # Fetch user credentials from your database
+    user_credentials = fetch_user_credentials(user_id)
+
+    # Trigger the upload
+    try:
+        upload_video(video_path=video_path, title=video_title, desc=video_desc, user_credentials=user_credentials)
+        return jsonify({"status": "success", "message": "Video uploaded successfully!"}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

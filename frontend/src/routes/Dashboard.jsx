@@ -79,6 +79,10 @@ const Dashboard = () => {
       <section className="w-full flex flex-col 
       justify-center min-h-screen
       gap-10 px-10 pt-8 ml-20">
+        {/* Notice */}
+        <div className='bg-yellow-700 rounded-2xl w-fit px-6 py-2'>
+          <p className='font-body text-body-sm text-white text-center'>Automatic Scheduled Uploads Coming Soon!</p>
+        </div>
         <h1 className='font-extrabold text-heading-xl text-white'>Dashboard</h1>
         <p className='font-body text-heading-md text-white'>{message}</p>
 

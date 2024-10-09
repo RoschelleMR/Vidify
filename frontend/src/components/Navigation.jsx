@@ -1,12 +1,15 @@
 import {motion, useAnimationControls} from "framer-motion";
 import { useEffect, useState } from "react";
 
+import { useNavigate } from 'react-router-dom'
+
 import {
     ChartBarIcon,
     ChartPieIcon,
     DocumentCheckIcon,
     Square2StackIcon,
     UsersIcon,
+    ArrowLeftEndOnRectangleIcon
   } from "@heroicons/react/24/outline";
 
 import NavigationLink from "./NavigationLink";
@@ -44,9 +47,19 @@ const containerVariants = {
 const Navigation = ({user_data}) => {
 
     const [isOpen, setIsOpen] = useState(false)
+    const navigate = useNavigate()
 
     const containerControls = useAnimationControls()
     const svgControls = useAnimationControls()
+
+    // Function to handle logout
+    const handleLogout = () => {
+      // Clear the JWT from localStorage
+      localStorage.removeItem("jwt");
+
+      // Redirect to the login page
+      navigate('/');
+    };
 
     useEffect(() => {
         
@@ -107,6 +120,15 @@ const Navigation = ({user_data}) => {
                 <NavigationLink name="Youtube Accounts ">
                     <UsersIcon className="stroke-inherit stroke-[0.75] min-w-8 w-8 size-8" />
                 </NavigationLink>
+                <div className="flex px-2 py-2 rounded cursor-pointer stroke-[0.75] hover:stroke-neutral-100
+                stroke-neutral-400 text-neutral-400 hover:text-neutral-100 place-items-center gap-3 hover:bg-red-700/30 transition-colors duration-100"
+                onClick={handleLogout}>
+                    <ArrowLeftEndOnRectangleIcon className="stroke-inherit stroke-[0.75] min-w-8 w-8 size-8" />
+                    <p className="text-inherit font-poppins overflow-hidden 
+                    whitespace-nowrap tracking-wide">
+                        Logout
+                    </p>
+                </div>
             </div>
             
         </motion.nav>
